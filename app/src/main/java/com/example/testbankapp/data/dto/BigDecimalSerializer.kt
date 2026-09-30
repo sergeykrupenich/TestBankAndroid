@@ -1,0 +1,29 @@
+package com.example.testbankapp.data.dto
+
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import java.math.BigDecimal
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.jsonPrimitive
+
+object BigDecimalSerializer : KSerializer<BigDecimal> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("BigDecimal", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: BigDecimal) {
+        encoder.encodeString(value.toPlainString())
+    }
+
+    override fun deserialize(decoder: Decoder): BigDecimal {
+        return if (decoder is JsonDecoder) {
+            val element = decoder.decodeJsonElement()
+            BigDecimal(element.jsonPrimitive.content)
+        } else {
+            BigDecimal(decoder.decodeString())
+        }
+    }
+}
